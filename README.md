@@ -2,7 +2,7 @@
 
 Команда:
 
-```
+```ps1
 python format_with_gemini.py -b
 ```
 
