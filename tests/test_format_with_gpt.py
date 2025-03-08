@@ -1,6 +1,6 @@
 import json
 
-from format_with_gemini import format_schedule
+from format_with_gpt import format_schedule
 from models.schedule import Schedule
 
 

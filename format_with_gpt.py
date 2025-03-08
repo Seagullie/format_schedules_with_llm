@@ -69,30 +69,15 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-args = parse_arguments()
-
-# - - USER VARIABLES - -
-# Path to schedule JSON file
-path_to_schedule_json: str = args.path_to_schedule_json
-# Path to use when saving corrected schedule JSON file
-path_to_formatted_schedule_json: str = args.path_to_formatted_schedule_json
-
-path_to_schedules_dir: str = args.path_to_schedules_dir
-path_to_output_dir: str = args.path_to_output_dir
-
-llm_model_name: str = args.llm_model_name
-
-# - - USER VARIABLES END - -
-
 # allowed requests per minute (more than enough in this case)
 RPM = 5_000
 TIME_PER_ONE_REQUEST = 60 / RPM
 
-client = OpenAI(api_key=OPEN_AI_API_KEY)
-
 
 def format_schedule(
-    schedule_json_str: str, path_to_formatted_schedule_json: str
+    schedule_json_str: str,
+    path_to_formatted_schedule_json: str,
+    llm_model_name: str = "gpt-4o",
 ) -> float:
     """Formats schedule with OpenAI LLM. Returns elapsed time in seconds."""
 
@@ -100,6 +85,7 @@ def format_schedule(
 
     message: str = SCHEDULE_CORRECTION_PROMPT_TEMPLATE.format(schedule_json_str)
 
+    client = OpenAI(api_key=OPEN_AI_API_KEY)
     response = client.chat.completions.create(
         model=llm_model_name,
         messages=[
@@ -139,6 +125,21 @@ def format_schedule(
 
 if __name__ == "__main__":
 
+    args = parse_arguments()
+
+    # - - USER VARIABLES - -
+    # Path to schedule JSON file
+    path_to_schedule_json: str = args.path_to_schedule_json
+    # Path to use when saving corrected schedule JSON file
+    path_to_formatted_schedule_json: str = args.path_to_formatted_schedule_json
+
+    path_to_schedules_dir: str = args.path_to_schedules_dir
+    path_to_output_dir: str = args.path_to_output_dir
+
+    llm_model_name: str = args.llm_model_name
+
+    # - - USER VARIABLES END - -
+
     # either work with single schedule or batch
     if (
         not args.batch_mode
@@ -147,7 +148,9 @@ if __name__ == "__main__":
     ):
         schedule_json_str: str = read_schedule(path_to_schedule_json)
 
-        format_schedule(schedule_json_str, path_to_formatted_schedule_json)
+        format_schedule(
+            schedule_json_str, path_to_formatted_schedule_json, llm_model_name
+        )
 
     elif args.batch_mode and path_to_schedules_dir and path_to_output_dir:
         schedule_paths = get_schedule_paths_from_dir(path_to_schedules_dir)
@@ -160,6 +163,7 @@ if __name__ == "__main__":
             elapsed_time = format_schedule(
                 schedule_json_str,
                 schedule_path.replace(path_to_schedules_dir, path_to_output_dir),
+                llm_model_name,
             )
 
             # Sleep to avoid rate limiting
