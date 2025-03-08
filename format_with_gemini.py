@@ -5,7 +5,12 @@ from google.generativeai.client import configure
 from google.generativeai.generative_models import GenerativeModel
 from google.generativeai.types import generation_types
 
-from utils import get_schedule_paths_from_dir, read_schedule, save_schedule
+from utils import (
+    get_schedule_paths_from_dir,
+    is_valid_json,
+    read_schedule,
+    save_schedule,
+)
 
 import time
 from tqdm import tqdm
@@ -72,21 +77,6 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-args = parse_arguments()
-
-
-# - - USER VARIABLES - -
-# Path to schedule JSON file
-path_to_schedule_json: str = args.path_to_schedule_json
-# Path to use when saving corrected schedule JSON file
-path_to_formatted_schedule_json: str = args.path_to_formatted_schedule_json
-
-path_to_schedules_dir: str = args.path_to_schedules_dir
-path_to_output_dir: str = args.path_to_output_dir
-
-llm_model_name: str = args.llm_model_name
-
-
 # - - USER VARIABLES END - -
 
 # allowed requests per minute
@@ -105,17 +95,22 @@ generation_config = generation_types.GenerationConfig(
     response_mime_type="application/json",
 )
 
-model = GenerativeModel(
-    model_name=llm_model_name,
-    generation_config=generation_config,
-)
-
 
 def format_schedule(
-    schedule_json_str: str, path_to_formatted_schedule_json: str
+    schedule_json_str: str,
+    path_to_formatted_schedule_json: str,
+    llm_model_name: str = "gemini-2.0-flash-exp",
 ) -> float:
-    """Formats schedule with Gemini LLM. Returns elapsed time in seconds."""
+    """Formats schedule_json_str with Gemini LLM and saves it to a file at path_to_formatted_schedule_json. Returns elapsed time in seconds."""
     start_time = time.time()
+
+    if not is_valid_json(schedule_json_str):
+        raise ValueError(f"Invalid JSON detected while trying to format schedule")
+
+    model = GenerativeModel(
+        model_name=llm_model_name,
+        generation_config=generation_config,
+    )
 
     chat_session = model.start_chat()
 
@@ -133,24 +128,48 @@ def format_schedule(
     return elapsed_time
 
 
-# either work with single schedule or batch
-if not args.batch_mode and path_to_schedule_json and path_to_formatted_schedule_json:
-    schedule_json_str: str = read_schedule(path_to_schedule_json)
+if __name__ == "__main__":
 
-    format_schedule(schedule_json_str, path_to_formatted_schedule_json)
-elif args.batch_mode and path_to_schedules_dir and path_to_output_dir:
-    schedule_paths = get_schedule_paths_from_dir(path_to_schedules_dir)
+    args = parse_arguments()
 
-    for schedule_path in tqdm(schedule_paths, desc="Formatting schedules", unit="file"):
-        print("\n")
-        schedule_json_str = read_schedule(schedule_path)
-        elapsed_time = format_schedule(
-            schedule_json_str,
-            schedule_path.replace(path_to_schedules_dir, path_to_output_dir),
+    # - - USER VARIABLES - -
+    # Path to schedule JSON file
+    path_to_schedule_json: str = args.path_to_schedule_json
+    # Path to use when saving corrected schedule JSON file
+    path_to_formatted_schedule_json: str = args.path_to_formatted_schedule_json
+
+    path_to_schedules_dir: str = args.path_to_schedules_dir
+    path_to_output_dir: str = args.path_to_output_dir
+
+    llm_model_name: str = args.llm_model_name or "gemini-2.0-flash-exp"
+
+    # either work with single schedule or batch
+    if (
+        not args.batch_mode
+        and path_to_schedule_json
+        and path_to_formatted_schedule_json
+    ):
+        schedule_json_str: str = read_schedule(path_to_schedule_json)
+
+        format_schedule(
+            schedule_json_str, path_to_formatted_schedule_json, llm_model_name
         )
+    elif args.batch_mode and path_to_schedules_dir and path_to_output_dir:
+        schedule_paths = get_schedule_paths_from_dir(path_to_schedules_dir)
 
-        # Sleep to avoid rate limiting
-        if elapsed_time < TIME_PER_ONE_REQUEST:
-            time.sleep(TIME_PER_ONE_REQUEST - elapsed_time + 0.1)
-else:
-    raise ValueError("No valid input/output paths provided")
+        for schedule_path in tqdm(
+            schedule_paths, desc="Formatting schedules", unit="file"
+        ):
+            print("\n")
+            schedule_json_str = read_schedule(schedule_path)
+            elapsed_time = format_schedule(
+                schedule_json_str,
+                schedule_path.replace(path_to_schedules_dir, path_to_output_dir),
+                llm_model_name,
+            )
+
+            # Sleep to avoid rate limiting
+            if elapsed_time < TIME_PER_ONE_REQUEST:
+                time.sleep(TIME_PER_ONE_REQUEST - elapsed_time + 0.1)
+    else:
+        raise ValueError("No valid input/output paths provided")

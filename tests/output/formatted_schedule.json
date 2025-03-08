@@ -1,0 +1,162 @@
+{
+    "monday": {
+        "classes": [
+            {
+                "index": 2,
+                "name": "Шаблони розробки програмних систем (ШРПС)",
+                "room": "а.306",
+                "qualification": "доц.",
+                "teacher": "Литовченко",
+                "label": null,
+                "isBiweekly": null,
+                "week": null
+            },
+            {
+                "index": 3,
+                "name": "ШРПС",
+                "room": "а.303",
+                "qualification": "доц.",
+                "teacher": "Литовченко",
+                "label": 1.0,
+                "isBiweekly": true,
+                "week": 1
+            },
+            {
+                "index": 3,
+                "name": "СА",
+                "room": "а.419",
+                "qualification": "ас.",
+                "teacher": "Мудрий",
+                "label": 2.0,
+                "isBiweekly": true,
+                "week": 2
+            },
+            {
+                "index": 4,
+                "name": "Методи і системи штучного інтелекту (МСШІ)",
+                "room": "а.235",
+                "qualification": "доц.",
+                "teacher": "Гілета",
+                "label": null,
+                "isBiweekly": null,
+                "week": null
+            }
+        ]
+    },
+    "tuesday": {
+        "classes": [
+            {
+                "index": 2,
+                "name": "Системний аналіз",
+                "room": "а.405",
+                "qualification": "проф.",
+                "teacher": "Піх",
+                "label": null,
+                "isBiweekly": null,
+                "week": null
+            },
+            {
+                "index": 3,
+                "name": "Маркетинг в ІТ",
+                "room": "а.309а",
+                "qualification": "доц.",
+                "teacher": "Караім",
+                "label": null,
+                "isBiweekly": null,
+                "week": null
+            },
+            {
+                "index": 4,
+                "name": "Маркетинг в ІТ",
+                "room": "а.309а",
+                "qualification": "доц.",
+                "teacher": "Караім",
+                "label": 2.0,
+                "isBiweekly": true,
+                "week": 2
+            }
+        ]
+    },
+    "wednesday": {
+        "classes": [
+            {
+                "index": 1,
+                "name": "Інфраструктура інформаційних технологій (І ІТ )",
+                "room": "а.405",
+                "qualification": "доц.",
+                "teacher": "Петяк",
+                "label": null,
+                "isBiweekly": null,
+                "week": null
+            },
+            {
+                "index": 2,
+                "name": "МСШІ",
+                "room": "а.419",
+                "qualification": "доц.",
+                "teacher": "Гілета",
+                "label": 1.0,
+                "isBiweekly": true,
+                "week": 1
+            },
+            {
+                "index": 3,
+                "name": "МСШІ",
+                "room": "а.419",
+                "qualification": "доц.",
+                "teacher": "Гілета",
+                "label": 1.0,
+                "isBiweekly": true,
+                "week": 1
+            }
+        ]
+    },
+    "thursday": {
+        "classes": [
+            {
+                "index": 1,
+                "name": "Методи опрацювання великих даних",
+                "room": "а.419",
+                "qualification": "проф.",
+                "teacher": "Грицик",
+                "label": 1.0,
+                "isBiweekly": true,
+                "week": 1
+            },
+            {
+                "index": 2,
+                "name": "Методи опрацювання великих даних",
+                "room": "а.310",
+                "qualification": "проф.",
+                "teacher": "Грицик",
+                "label": null,
+                "isBiweekly": null,
+                "week": null
+            },
+            {
+                "index": 3,
+                "name": "Іноземна мова професійного спрямування",
+                "room": "а.309|а.309а",
+                "qualification": "ст.в.|ст.в.",
+                "teacher": "Фігель|Смілевська",
+                "label": null,
+                "isBiweekly": null,
+                "week": null
+            }
+        ]
+    },
+    "friday": {
+        "classes": [
+            {
+                "index": 1,
+                "name": "Інфраструктура інформаційних технологій (І ІТ )",
+                "room": "а.419",
+                "qualification": "доц.",
+                "teacher": "Петяк",
+                "label": null,
+                "isBiweekly": null,
+                "week": null
+            }
+        ]
+    }
+}

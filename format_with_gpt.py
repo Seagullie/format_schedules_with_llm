@@ -137,25 +137,33 @@ def format_schedule(
     return elapsed_time
 
 
-# either work with single schedule or batch
-if not args.batch_mode and path_to_schedule_json and path_to_formatted_schedule_json:
-    schedule_json_str: str = read_schedule(path_to_schedule_json)
+if __name__ == "__main__":
 
-    format_schedule(schedule_json_str, path_to_formatted_schedule_json)
+    # either work with single schedule or batch
+    if (
+        not args.batch_mode
+        and path_to_schedule_json
+        and path_to_formatted_schedule_json
+    ):
+        schedule_json_str: str = read_schedule(path_to_schedule_json)
 
-elif args.batch_mode and path_to_schedules_dir and path_to_output_dir:
-    schedule_paths = get_schedule_paths_from_dir(path_to_schedules_dir)
+        format_schedule(schedule_json_str, path_to_formatted_schedule_json)
 
-    for schedule_path in tqdm(schedule_paths, desc="Formatting schedules", unit="file"):
-        print("\n")
-        schedule_json_str = read_schedule(schedule_path)
-        elapsed_time = format_schedule(
-            schedule_json_str,
-            schedule_path.replace(path_to_schedules_dir, path_to_output_dir),
-        )
+    elif args.batch_mode and path_to_schedules_dir and path_to_output_dir:
+        schedule_paths = get_schedule_paths_from_dir(path_to_schedules_dir)
 
-        # Sleep to avoid rate limiting
-        if elapsed_time < TIME_PER_ONE_REQUEST:
-            time.sleep(TIME_PER_ONE_REQUEST - elapsed_time + 0.1)
-else:
-    raise ValueError("No valid input/output paths provided")
+        for schedule_path in tqdm(
+            schedule_paths, desc="Formatting schedules", unit="file"
+        ):
+            print("\n")
+            schedule_json_str = read_schedule(schedule_path)
+            elapsed_time = format_schedule(
+                schedule_json_str,
+                schedule_path.replace(path_to_schedules_dir, path_to_output_dir),
+            )
+
+            # Sleep to avoid rate limiting
+            if elapsed_time < TIME_PER_ONE_REQUEST:
+                time.sleep(TIME_PER_ONE_REQUEST - elapsed_time + 0.1)
+    else:
+        raise ValueError("No valid input/output paths provided")
